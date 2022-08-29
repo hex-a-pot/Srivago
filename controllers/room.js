@@ -6,12 +6,11 @@ export const createRoom = async (req, res, next) => {
   const newRoom = new Room(req.body);
   const hotelId = req.params.hotelId;
   try {
-    await newRoom.save();
+    const savedRoom = await newRoom.save();
     try {
-            const hotel = await Hotel.findById(hotelId)
-            if(!hotel)
-            return next(createError(404,"Hotel Not Found"))
-            
+        await Hotel.findByIdAndUpdate(hotelId,{
+            $push :{rooms : savedRoom._id}
+        })   
     } catch (error) { return next(err)}
     res.status(200).json("New Room has been created successfully!!");
   } catch (err) {
